@@ -258,3 +258,9 @@ IMAGE_CMD_resinos-img () {
 # Make sure we regenerate images if we modify the files that go in the boot
 # partition
 do_rootfs[vardeps] += "RESIN_BOOT_PARTITION_FILES"
+
+# XXX(petrosagg): This should be eventually implemented using a docker-native daemon
+IMAGE_CMD_docker () {
+    DOCKER_IMAGE=$(${IMAGE_CMD_TAR} -cv -C ${IMAGE_ROOTFS} . | docker import -)
+    docker save ${DOCKER_IMAGE} > ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.docker
+}
