@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -o errexit
+set -x
+
+while getopts 'i:o:' flag; do
+	case "${flag}" in
+        i) input=$(realpath "${OPTARG}") ;;
+        o) output=$(realpath "${OPTARG}") ;;
+        *) error "Unexpected option ${flag}" ;;
+	esac
+done
+
+if ! [ -f "$input" ]; then
+    echo "File does not exist: $input"
+    exit 1
+fi
+
+if ! [ -f "$output" ]; then
+    echo "File does not exist: $output"
+    exit 1
+fi
+
+docker run --privileged --rm -v "$input:/input:ro" -v "$output:/output" @IMAGE@
