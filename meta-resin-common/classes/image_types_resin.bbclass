@@ -56,7 +56,7 @@ inherit image_types
 #   +-------------------+
 #
 
-RESIN_ROOT_FSTYPE ?= "ext4"
+RESIN_ROOT_FSTYPE ?= "hostapp-ext4"
 
 python() {
     # Check if we are running on a poky version which deploys to IMGDEPLOYDIR
@@ -263,4 +263,15 @@ do_rootfs[vardeps] += "RESIN_BOOT_PARTITION_FILES"
 IMAGE_CMD_docker () {
     DOCKER_IMAGE=$(${IMAGE_CMD_TAR} -cv -C ${IMAGE_ROOTFS} . | docker import -)
     docker save ${DOCKER_IMAGE} > ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.docker
+}
+
+IMAGE_TYPEDEP_hostapp-ext4 = "docker"
+
+IMAGE_DEPENDS_hostapp-ext4 = " \
+    mkfs-hostapp-native \
+    "
+
+IMAGE_CMD_hostapp-ext4 () {
+    dd if=/dev/zero of=${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.hostapp-ext4 seek=$ROOTFS_SIZE count=0 bs=1024
+    mkfs.hostapp-ext4 -i ${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.docker -o ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.hostapp-ext4
 }
