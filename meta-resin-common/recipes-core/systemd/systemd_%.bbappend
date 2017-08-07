@@ -6,6 +6,8 @@ SRC_URI_append = " \
     file://remove_systemd-getty-generator.patch \
     file://resin.target \
     file://watchdog.conf \
+    file://60-resin-update-state.rules \
+    file://resin_update_state_probe \
     "
 
 FILES_${PN} += " \
@@ -58,7 +60,12 @@ do_install_append() {
 
     # We take care of journald flush ourselves
     rm ${D}/lib/systemd/system/sysinit.target.wants/systemd-journal-flush.service
+
+    install -m 0755 ${WORKDIR}/resin_update_state_probe ${D}/lib/udev/resin_update_state_probe
 }
+
+FILES_udev += "${rootlibexecdir}/udev/resin_update_state_probe \
+    "
 
 RDEPENDS_${PN}_append = " resin-ntp-config"
 
