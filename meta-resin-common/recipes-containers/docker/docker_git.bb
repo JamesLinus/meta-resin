@@ -48,7 +48,10 @@ DEPENDS_append_class-native = " go"
 DEPENDS_append_class-target = " systemd go-cross"
 RDEPENDS_${PN}_class-target = " curl util-linux iptables tini systemd"
 RRECOMMENDS_${PN} += " kernel-module-nf-nat"
+
 DOCKER_PKG="github.com/docker/docker"
+DOCKER_TARGET_class-native = "binary-rce-docker"
+DOCKER_TARGET_class-target = "dynbinary-rce-docker"
 
 do_compile() {
   export PATH=${STAGING_BINDIR_NATIVE}/${HOST_SYS}:$PATH
@@ -101,7 +104,7 @@ do_compile() {
   export DOCKER_GITCOMMIT="${SRCREV}"
   export DOCKER_BUILDTAGS='exclude_graphdriver_btrfs exclude_graphdirver_zfs exclude_graphdriver_devicemapper'
 
-  ./hack/make.sh binary-rce-docker
+  ./hack/make.sh ${DOCKER_TARGET}
 
   # Compile mobynit
   cd .gopath/src/"${DOCKER_PKG}"/cmd/mobynit
@@ -116,7 +119,7 @@ SYSTEMD_SERVICE_${PN} = "docker.service docker-host.service var-lib-docker.mount
 
 do_install() {
   mkdir -p ${D}/${bindir}
-  install -m 0755 ${S}/bundles/${DOCKER_VERSION}/binary-rce-docker/rce-docker ${D}/${bindir}/rce-docker
+  install -m 0755 ${S}/bundles/${DOCKER_VERSION}/${DOCKER_TARGET}/rce-docker ${D}/${bindir}/rce-docker
   install -d ${D}/bootstrap
   install -m 0755 ${S}/cmd/mobynit/mobynit ${D}/bootstrap/init
 
