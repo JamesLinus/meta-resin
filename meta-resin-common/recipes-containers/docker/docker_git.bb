@@ -19,7 +19,7 @@ DESCRIPTION = "Linux container runtime \
  "
 
 inherit binary-compress
-FILES_COMPRESS = "/bootstrap/init"
+FILES_COMPRESS = "/boot/init"
 
 # XXX this should be a temporary branch until we will include mobynit support
 # in a release branch
@@ -120,8 +120,8 @@ SYSTEMD_SERVICE_${PN} = "docker.service docker-host.service var-lib-docker.mount
 do_install() {
   mkdir -p ${D}/${bindir}
   install -m 0755 ${S}/bundles/${DOCKER_VERSION}/${DOCKER_TARGET}/rce-docker ${D}/${bindir}/rce-docker
-  install -d ${D}/bootstrap
-  install -m 0755 ${S}/cmd/mobynit/mobynit ${D}/bootstrap/init
+  install -d ${D}/boot
+  install -m 0755 ${S}/cmd/mobynit/mobynit ${D}/boot/init
 
   ln -sf rce-docker ${D}/${bindir}/docker
   ln -sf rce-docker ${D}/${bindir}/dockerd
@@ -158,5 +158,5 @@ GROUPADD_PARAM_${PN} = "-r docker"
 FILES_${PN} += " \
   /lib/systemd/system/* \
   /home/root/.docker/ \
-  /bootstrap/init \
+  /boot/init \
   "
